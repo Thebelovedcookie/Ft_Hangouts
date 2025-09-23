@@ -1,1 +1,37 @@
-/build
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# IntelliJ IDEA / Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Log files
+*.log
+
+# Android specific
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services (Firebase, etc.)
+google-services.json
+
+# Generated files
+app/build/
+*/build/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
