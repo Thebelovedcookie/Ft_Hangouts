@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="settings_title">Settings</string>
+    <string name="choose_header_color">Choose Header Color:</string>
+    <string name="name_label">Name</string>
+    <string name="phone_label">Phone Number</string>
+    <string name="address_label">Address</string>
+    <string name="save_button">Save</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="new_contact">New Contact</string>
+    <string name="edit_contact">Edit Contact</string>
+    <string name="error_name">You must insert a name.</string>
+    <string name="send_message">Send.</string>
+    <string name="new_message">New Message</string>
+    <string name="choose_language">English</string>
+</resources>
