@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,9 +50,17 @@ fun ContactListScreen(context: Context, onEditContact: (Contact) -> Unit) {
     val contacts = remember { mutableStateOf(dbHandler.readData()) }
 
     val lazyListState = rememberLazyListState()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
 
-    val maxHeaderHeight = 700f
-    val minHeaderHeight = 230f
+
+    var maxHeaderHeight = 700f
+    var minHeaderHeight = 230f
+    if (isLandscape) {
+        maxHeaderHeight = 250f
+        minHeaderHeight = 120f
+    }
+
     var headerHeightPx by remember { mutableStateOf(maxHeaderHeight) }
 
     val nestedScrollConnection = remember {
@@ -81,7 +90,6 @@ fun ContactListScreen(context: Context, onEditContact: (Contact) -> Unit) {
                 modifier = Modifier
                     .height(animatedHeaderHeight)
                     .fillMaxWidth(),
-//                    .background(Color.Black),
                 contentAlignment = Alignment.Center
             ) {
                 Text(

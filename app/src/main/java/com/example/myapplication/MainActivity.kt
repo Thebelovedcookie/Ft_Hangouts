@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.Window
+import android.view.WindowInsets
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,11 +26,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
-
     private val requestSmsPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val receiveGranted = permissions[Manifest.permission.RECEIVE_SMS] ?: false
@@ -71,18 +82,73 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    fun ApplyStatusBarColorCompat(window: Window, color: Color) {
+        SideEffect {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                // Android 15+
+                window.decorView.setOnApplyWindowInsetsListener { view, insets ->
+                    val statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars())
+                    view.setBackgroundColor(color.toArgb())
+
+                    view.setPadding(0, statusBarInsets.top, 0, 0)
+
+                    insets
+                }
+                window.decorView.requestApplyInsets()
+            } else {
+                window.statusBarColor = color.toArgb()
+            }
+        }
+    }
+
 
     @Composable
     fun MyApp(context: Context, activity: Activity) {
-        var currentScreen by remember { mutableStateOf("conversations") }
+
+        var backgroundTime by remember { mutableStateOf<String?>(null) }
+        var lastTime by remember { mutableStateOf<String?>(null) }
+
+        val lifecycleOwner = LocalLifecycleOwner.current
+
+        DisposableEffect(lifecycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_STOP -> {
+                        val now = Calendar.getInstance().time
+                        val formatter = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                        backgroundTime = formatter.format(now)
+                    }
+
+                    Lifecycle.Event.ON_START -> {
+                        lastTime = backgroundTime
+                    }
+
+                    else -> {}
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+
+        if (lastTime != null) {
+            Toast.makeText(context,  stringResource(R.string.time) + " " +lastTime, Toast.LENGTH_SHORT).show()
+        }
+
+
+        var currentScreen by remember { mutableStateOf("list") }
         var contactToEdit by remember { mutableStateOf<Contact?>(null) }
         var chatContact by remember { mutableStateOf<Contact?>(null) }
         var currentConvId by remember { mutableStateOf<Int?>(null) }
         var initialPhoneForForm by remember { mutableStateOf("") }
 
         var headerColor by remember { mutableStateOf(Color.Black) }
-        var appLanguage by remember { mutableStateOf("en") }
+        val window = activity.window
 
+        ApplyStatusBarColorCompat(window, headerColor)
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -140,16 +206,11 @@ class MainActivity : ComponentActivity() {
                                 currentScreen = "chat"
                             }
                         )
+
                         "settings" -> Settings(
                             currentColor = headerColor,
-                            onColorSelected = { selectedColor ->
-                                headerColor = selectedColor
-                            },
-                            currentLanguage = appLanguage,
-                            onLanguageSelected = { selectedLang ->
-                                appLanguage = selectedLang
-                            },
-                            activity
+                            onColorSelected = { selectedColor -> headerColor = selectedColor
+                            }
                         )
                     }
                 }

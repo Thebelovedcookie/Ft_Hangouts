@@ -12,5 +12,7 @@
     <string name="error_name">You must insert a name.</string>
     <string name="send_message">Send.</string>
     <string name="new_message">New Message</string>
-    <string name="choose_language">English</string>
+    <string name="choose_language">Choose language</string>
+    <string name="keyboard">Keyboard</string>
+    <string name="time">last background setting</string>
 </resources>

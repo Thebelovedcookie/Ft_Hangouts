@@ -181,7 +181,7 @@ fun ChatScreen(convId: Int, contact: Contact, dbHelper: DataBaseHandler, onBack:
                         smsManager.sendTextMessage(contact.phoneNumber, null, input, null, null)
                         Toast.makeText(context, "Send", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context, "Permission SEND_SMS manquante", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Permission SEND_SMS missing", Toast.LENGTH_SHORT).show()
                     }
 
                     input = ""

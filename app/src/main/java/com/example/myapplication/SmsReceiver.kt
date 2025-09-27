@@ -22,7 +22,6 @@ class SmsReceiver : BroadcastReceiver() {
                     val sms = SmsMessage.createFromPdu(pdu as ByteArray)
                     val sender = sms.originatingAddress ?: continue
                     val message = sms.messageBody
-                    Log.d("SmsReceiver", "Message reçu de $sender : $message")
 
                     val contactId = dbHandler.getContactIdByPhoneNumber(sender)
 
@@ -34,7 +33,6 @@ class SmsReceiver : BroadcastReceiver() {
                     // Insert le message dans la base
                     dbHandler.insertMessage(convId, message, false, System.currentTimeMillis())
 
-                    // 🔥 Envoie un broadcast local à ton appli
                     val localIntent = Intent("com.apayen.NEW_SMS")
                     LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent)
                 }

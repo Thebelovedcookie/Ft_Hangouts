@@ -21,6 +21,9 @@
 
         <!-- Activity principale -->
         <activity android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:resizeableActivity="true"
+            android:screenOrientation="fullSensor"
             android:exported="true">
             <!-- Launcher -->
             <intent-filter>

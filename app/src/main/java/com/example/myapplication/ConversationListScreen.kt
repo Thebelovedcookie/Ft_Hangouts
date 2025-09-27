@@ -43,6 +43,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import java.text.SimpleDateFormat
@@ -72,8 +73,17 @@ fun ConversationListScreen(
 
     val lazyListState = rememberLazyListState()
 
-    val maxHeaderHeight = 700f
-    val minHeaderHeight = 230f
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
+
+    var maxHeaderHeight = 700f
+    var minHeaderHeight = 230f
+    if (isLandscape) {
+        maxHeaderHeight = 250f
+        minHeaderHeight = 120f
+    }
+
     var headerHeightPx by remember { mutableStateOf(maxHeaderHeight) }
 
     val nestedScrollConnection = remember {

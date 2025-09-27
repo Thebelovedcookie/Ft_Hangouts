@@ -17,14 +17,12 @@ class SmsProvider : ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? {
-        // Crée un curseur vide avec les colonnes standards SMS
         val cursor = MatrixCursor(
             arrayOf(
                 "_id", "thread_id", "address", "person", "date",
                 "body", "type", "read"
             )
         )
-        // Optionnel : tu peux remplir le curseur avec des messages simulés
         return cursor
     }
 
@@ -37,7 +35,6 @@ class SmsProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        // Tu peux ajouter un message simulé ici si tu veux
         return null
     }
 
