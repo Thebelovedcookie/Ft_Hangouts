@@ -25,6 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +48,11 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ContactListScreen(context: Context, onEditContact: (Contact) -> Unit) {
     val dbHandler = remember { DataBaseHandler(context) }
-    val contacts = remember { mutableStateOf(dbHandler.readData()) }
+    val contacts = remember { mutableStateOf(emptyList<Contact>()) }
+
+    LaunchedEffect(Unit) {
+        contacts.value = dbHandler.readData()
+    }
 
     val lazyListState = rememberLazyListState()
     val configuration = LocalConfiguration.current

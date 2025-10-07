@@ -20,17 +20,24 @@ class SmsReceiver : BroadcastReceiver() {
 
                 for (pdu in pdus) {
                     val sms = SmsMessage.createFromPdu(pdu as ByteArray)
-                    val sender = sms.originatingAddress ?: continue
+                    var sender = sms.originatingAddress ?: continue
                     val message = sms.messageBody
 
-                    val contactId = dbHandler.getContactIdByPhoneNumber(sender)
+                    if (sender.startsWith("+33")) {
+                        sender = sender.replaceFirst("+33", "0")
+                    }
 
+                    var contactId = dbHandler.getContactIdByPhoneNumber(sender)
+                    if (contactId == null) {
+                        contactId = dbHandler.insertContact(sender) //create a contact with number as name
+                    }
                     var convId = dbHandler.getIdOfConversation(sender)
                     if (convId == null) {
+                        //creer une conv
                         convId = dbHandler.insertConversation(sender, contactId)
                     }
 
-                    // Insert le message dans la base
+                    // Insert le message dans la base message
                     dbHandler.insertMessage(convId, message, false, System.currentTimeMillis())
 
                     val localIntent = Intent("com.apayen.NEW_SMS")

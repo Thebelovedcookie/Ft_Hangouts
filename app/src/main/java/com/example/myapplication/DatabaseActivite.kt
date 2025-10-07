@@ -144,7 +144,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
                 result.toInt()
             }
         } catch (e: Exception) {
-            Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Error1: ${e.message}", Toast.LENGTH_LONG).show()
             e.printStackTrace()
             0
         }
@@ -159,7 +159,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
                 Toast.makeText(context, "Nothing to erase, check the id", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Error2: ${e.message}", Toast.LENGTH_LONG).show()
             e.printStackTrace()
         }
     }
@@ -200,7 +200,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
         } catch (e: Exception)
         {
-            Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Error3: ${e.message}", Toast.LENGTH_LONG).show()
             e.printStackTrace()
         }
         return contacts
@@ -320,5 +320,27 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         cursor.close()
         return contactId
     }
+
+    fun insertContact(phoneNumber: String): Int {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COL_PHONE, phoneNumber)
+            put(COL_NAME, phoneNumber)
+            put(COL_AGE, 0)
+            put(COL_MAIL, "")
+            put(COL_ADDRESS, "")
+        }
+
+        val newId = db.insert(TABLE_NAME, null, values)
+
+        if (newId == -1L) {
+            Log.e("DB", "Échec de l'insertion du contact ($phoneNumber)")
+            return -1
+        } else {
+            Log.d("DB", "Contact inséré avec ID = $newId ($phoneNumber)")
+            return newId.toInt()
+        }
+    }
+
 
 }
