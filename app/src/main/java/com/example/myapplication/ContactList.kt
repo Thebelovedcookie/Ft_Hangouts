@@ -1,6 +1,8 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,7 +48,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ContactListScreen(context: Context, onEditContact: (Contact) -> Unit) {
+fun ContactListScreen(
+    context: Context,
+    onEditContact: (Contact) -> Unit,
+    onCallContact: (String) -> Unit  // <-- nouveau param
+) {
     val dbHandler = remember { DataBaseHandler(context) }
     val contacts = remember { mutableStateOf(emptyList<Contact>()) }
 
@@ -122,19 +128,16 @@ fun ContactListScreen(context: Context, onEditContact: (Contact) -> Unit) {
                 LazyColumn(state = lazyListState) {
                     items(contacts.value.sortedBy { it.name.lowercase() }) { contact ->
                         ListContact(
+                            context = context,
                             contact = contact,
                             dbHandler = dbHandler,
-                            onEditContact = { selectedContact ->
-                                onEditContact(selectedContact)
-                            },
-                            onContactsChanged = {
-                                contacts.value = dbHandler.readData()
-                            }
+                            onEditContact = { selectedContact -> onEditContact(selectedContact) },
+                            onContactsChanged = { contacts.value = dbHandler.readData() },
+                            onCallContact = { number -> onCallContact(number) }  // <-- nouveau callback
                         )
 
-
                         Divider(
-                            color = Color.Black.copy(alpha = 0.3f), //test
+                            color = Color.Black.copy(alpha = 0.3f),
                             thickness = 1.dp,
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
@@ -147,10 +150,12 @@ fun ContactListScreen(context: Context, onEditContact: (Contact) -> Unit) {
 
 @Composable
 fun ListContact(
+    context: Context,
     contact: Contact,
     dbHandler: DataBaseHandler,
     onEditContact: (Contact) -> Unit,
-    onContactsChanged: () -> Unit
+    onContactsChanged: () -> Unit,
+    onCallContact: (String) -> Unit  // <-- nouveau param
 ) {
     Row(
         modifier = Modifier
@@ -169,6 +174,24 @@ fun ListContact(
             color = Color.White,
             fontSize = 20.sp
         )
+
+        // 🔹 Bouton Appeler
+        Button(
+            onClick = {
+                onCallContact(contact.phoneNumber)  // envoie le numéro au KeyboardScreen
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF7C7091),
+                contentColor = Color.White
+            ),
+            modifier = Modifier.padding(end = 8.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.call),
+                contentDescription = "Appeler",
+                modifier = Modifier.size(20.dp)
+            )
+        }
 
         Button(
             onClick = {

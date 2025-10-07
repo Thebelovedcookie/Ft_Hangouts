@@ -144,6 +144,7 @@ class MainActivity : ComponentActivity() {
         var chatContact by remember { mutableStateOf<Contact?>(null) }
         var currentConvId by remember { mutableStateOf<Int?>(null) }
         var initialPhoneForForm by remember { mutableStateOf("") }
+        var phoneInput by remember { mutableStateOf("") }
 
         var headerColor by remember { mutableStateOf(Color.Black) }
         val window = activity.window
@@ -157,7 +158,7 @@ class MainActivity : ComponentActivity() {
             Column(modifier = Modifier.fillMaxSize()) {
                 Box(modifier = Modifier.weight(1f)) {
                     when (currentScreen) {
-                        "keyboard" -> KeyboardScreen(context)
+                        "keyboard" -> KeyboardScreen(context, phoneInput)
                         "form" -> ContactForm(
                             context,
                             contactToEdit,
@@ -169,7 +170,12 @@ class MainActivity : ComponentActivity() {
                             onEditContact = { contact ->
                                 contactToEdit = contact
                                 currentScreen = "form"
-                            })
+                            },
+                            onCallContact = { number ->
+                                phoneInput = number
+                                currentScreen = "keyboard"
+                            }
+                        )
 
                         "conversations" -> ConversationListScreen(
                             context,
